@@ -25,5 +25,5 @@ class Dado:
 
 dado1 = Dado(6)
 
-for i in range (16):
+for i in range (20):
     print(dado1.jogar_dado(2**i))
