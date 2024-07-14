@@ -32,8 +32,7 @@ class Dado_Ideal:
         plt.xticks(range(1, self.faces+1))
         plt.xlabel("Face")
         plt.ylabel("Frequência relativa")
-        plt.title("Frequência relativa de cada face para dado jogado 2^^n - 1  vezes")
-
+        plt.title(f"Frequência relativa de cada face para dado jogado {2*vezes-1} vezes")
 
         return (f"Os resultados obtidos foram: {resultados_nessa_jogada}\n"
     f"E a diferenca entre a face que apareceu mais vezes e a que apareceu menos vezes é {resultados_nessa_jogada.max() - resultados_nessa_jogada.min()}\n"
@@ -42,7 +41,7 @@ class Dado_Ideal:
 
 dado1 = Dado_Ideal(6)
 
-for i in range (5):
+for i in range (15):
     print(dado1.jogar_dado(2**i))
     plt.show()
 

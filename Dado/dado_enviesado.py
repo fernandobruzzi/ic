@@ -37,7 +37,7 @@ class Dado_Enviesado:
         plt.xticks(range(1, self.faces+1))
         plt.xlabel("Face")
         plt.ylabel("Frequência relativa")
-        plt.title("Frequência relativa de cada face para dado jogado 2^n - 1  vezes")
+        plt.title(f"Frequência relativa de cada face para dado jogado {2*vezes-1} vezes")
 
 
         return (f"E o historico dos resultados é {self.frequencia_das_faces}")         
