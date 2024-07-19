@@ -10,6 +10,11 @@ class Dado_Enviesado:
         self.vezes_jogadas = np.zeros((1), dtype = int)
         self.link_freq_jog = 0 #esse link serve para relacionar historico[link][x] com jogadas[link]
 
+        #sorteamos uma face para monitorar
+        self.face_monitorada = np.random.randint(1, faces + 1)   
+        self.contador_face_monitorada = 0
+        self.vetor_face_monitorada = []
+
         #o nosso vies é uma matrix faces x 2: (face, peso_da_face), sendo o peso um numero entre 0 e 1
         #com isso, determinamos a probabilidade de cada face
         self.p_face = np.zeros((faces+1,2))
@@ -47,9 +52,13 @@ class Dado_Enviesado:
             for j in range(1, len(self.p_face)):
                 if ((i >= self.p_face[j][0]) and (i <= self.p_face[j][1])):
                     resultados_nessa_jogada[j] += 1
+                    if j == self.face_monitorada:
+                        self.vetor_face_monitorada+= [self.contador_face_monitorada]
+                        self.contador_face_monitorada = 0
+                    else:
+                        self.contador_face_monitorada += 1
 
         self.historico_das_faces = np.append(self.historico_das_faces,[self.historico_das_faces[self.link_freq_jog] + resultados_nessa_jogada],axis=0)  
-
 
         #podemos fazer o mesmo sorteio utilizando também a funcao random choice do np
         resultado_np = np.random.choice(self.faces+1, vezes, p = [x[1]-x[0] for x in self.p_face])
@@ -99,12 +108,22 @@ class Dado_Enviesado:
         plt.legend()
         plt.show()
 
+    def media_face_monitorada(self):
+        # problema quando a face escolhida aparece na primeira vez
+        try:
+            media = (sum(self.vetor_face_monitorada))/len(self.vetor_face_monitorada)
+            return (f"Devemos fazer aproximadamente {media} lançamentos para que a face {self.face_monitorada} apareça ao menos uma vez")
+        except ZeroDivisionError:
+            return(f"A face {self.face_monitorada} ainda não apareceu para {sum(self.vezes_jogadas)} jogadas")
 
-dado1 = Dado_Enviesado(6,[[1,0.9]])
+
+
+dado1 = Dado_Enviesado(2,[[1,0.9]])
 
 for i in range (10):
     # print(dado1.jogar_dado(2**i))
     dado1.jogar_dado(2**i)
-dado1.grafico_erro()
+# dado1.grafico_erro()
+print(dado1.media_face_monitorada())
 
 
