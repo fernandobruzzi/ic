@@ -52,11 +52,12 @@ class Dado_Enviesado:
             for j in range(1, len(self.p_face)):
                 if ((i >= self.p_face[j][0]) and (i <= self.p_face[j][1])):
                     resultados_nessa_jogada[j] += 1
+
+                    self.contador_face_monitorada+=1
                     if j == self.face_monitorada:
                         self.vetor_face_monitorada+= [self.contador_face_monitorada]
                         self.contador_face_monitorada = 0
-                    else:
-                        self.contador_face_monitorada += 1
+                        
 
         self.historico_das_faces = np.append(self.historico_das_faces,[self.historico_das_faces[self.link_freq_jog] + resultados_nessa_jogada],axis=0)  
 
@@ -118,8 +119,7 @@ class Dado_Enviesado:
 
 
 
-dado1 = Dado_Enviesado(2,[[1,0.9]])
-
+dado1 = Dado_Enviesado(4,[1, 0.25])
 for i in range (10):
     # print(dado1.jogar_dado(2**i))
     dado1.jogar_dado(2**i)
