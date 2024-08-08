@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 class Dado_Enviesado:
     
     def __init__(self, faces, vies):
+        # o parametro vies deve ser passado da seguinte forma [(face,vies), (face,vies)....]
         #determina os atributos faces e o historico de cada face 
         self.faces = faces
         self.historico_das_faces = np.zeros((1,faces+1))
@@ -11,7 +12,7 @@ class Dado_Enviesado:
         self.link_freq_jog = 0 #esse link serve para relacionar historico[link][x] com jogadas[link]
 
         #sorteamos uma face para monitorar
-        self.face_monitorada = np.random.randint(1, faces + 1)   
+        self.face_monitorada = np.random.randint(1, faces + 1)  
         self.contador_face_monitorada = 0
         self.vetor_face_monitorada = []
 
@@ -83,7 +84,7 @@ class Dado_Enviesado:
         plt.xlabel("Face")
         plt.ylabel("Frequência relativa")
         plt.title(f"Frequência relativa de cada face para dado jogado {self.vezes_jogadas[self.link_freq_jog]} vezes")
-        plt.show()
+        # plt.show()
 
 
     def grafico_erro(self):
@@ -94,20 +95,31 @@ class Dado_Enviesado:
         for i in range(len(x)):
             y[i] = y[i]/x[i]
 
-        #transformamos as frequencias em frequencias - frequencia ideal
+        #transformamos as frequencias em modulo(frequencias - frequencia ideal)
+        freq_ideal = [i[1]-i[0] for i in self.p_face[1:]]
+        # print(freq_ideal, '\n')
+        # print(y, '\n tudo \n')
+        # print(y[:,0])
         for i in range(self.faces):
-            plt.plot(x, ((y[:, i])-(self.p_face[i+1][1]-self.p_face[i+1][0])), label = f"face{i+1}")
+            y[:,i] = np.absolute(y[:,i] - freq_ideal[i])
+        # y = np.absolute((y - freq_ideal))
+        # print(y[:,0])
+        for i in range(self.faces):
+            plt.plot(x, y[:, i], label = f"face{i+1}", linestyle = "dotted", alpha = 0.8)
 
         #alem disso, vamos inserir retas para ver qual se adequa ao erro
-        plt.plot(x,1/x, label = "1/x")
-        plt.plot(x,1/(x**2), label = "1/x**2")
-        plt.plot(x,1/np.log(x), label = "1/ln(x)")
-        plt.plot(x, 1/x*(np.log(x)), label = "1/x*ln(x)")
+        plt.plot(x,1/x, label = "1/x", alpha = 0.6)
+        # plt.plot(x,1/(x**2), label = "1/x**2")
+        # plt.plot(x,1/np.log(x), label = "1/ln(x)")
+        # plt.plot(x, 1/x*(np.log(x)), label = "1/x*ln(x)")
 
         plt.xlabel("Vezes jogadas")
-        plt.ylabel("Frequencia real da face - frequencia ideal")
+        plt.ylabel("Módulo(Frequencia real da face - frequencia ideal)")
+        plt.yscale("log")
+        plt.xscale("log")
+        plt.title(f"Vezes jogadas{self.vezes_jogadas[-1]}")
         plt.legend()
-        plt.show()
+        # plt.show()
 
     def media_face_monitorada(self):
         # problema quando a face escolhida aparece na primeira vez
@@ -117,13 +129,26 @@ class Dado_Enviesado:
         except ZeroDivisionError:
             return(f"A face {self.face_monitorada} ainda não apareceu para {sum(self.vezes_jogadas)} jogadas")
 
+    def grafico_face_monitorada(self):
+        #se a face nao tiver saido nao fazemos nada
+        if not self.vetor_face_monitorada: return
+        data = self.vetor_face_monitorada
+        media = np.mean(data)
+        mediana = np.median(data)
+        desvio_padrao = np.std(data)
+        plt.hist(data, bins = range(np.min(data)-1, np.max(data)+2), align= 'left', density = True, color = 'skyblue', edgecolor = 'black'  )
+        plt.xticks(range(np.min(data)-1, np.max(data)+2))
+        plt.xlabel("Quantidade de lançamentos")
+        plt.ylabel("Porcentagem dos lançamentos")
+        plt.text(x = (np.max(data)/(2)), y = (self.p_face[self.face_monitorada][1]-self.p_face[self.face_monitorada][0])/2, s = f"média = {media:.4f} \n mediana = {mediana} \n desvio padrão = {desvio_padrao:.4f}")
+        plt.title(f"Histograma que mostra quantas vezes foram jogadas o dado até que a face {self.face_monitorada} fosse obtida")
+        plt.tight_layout()
+        # plt.show()
 
 
-dado1 = Dado_Enviesado(4,[1, 0.25])
-for i in range (10):
-    # print(dado1.jogar_dado(2**i))
-    dado1.jogar_dado(2**i)
-# dado1.grafico_erro()
-print(dado1.media_face_monitorada())
-
-
+# d = Dado_Enviesado(6, [[1,0.8]])
+# for i in range (20):
+#     d.jogar_dado(2**i)
+#     if i != 0 and 20%i == 0:
+#         d.grafico_erro()
+#         plt.show()
