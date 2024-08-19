@@ -11,7 +11,9 @@ class Dado_Ideal:
         self.link_freq_jog = 0 #esse link serve para relacionar historico[link][x] com jogadas[link]
 
         #sorteamos uma face para monitorar
-        self.face_monitorada = np.random.randint(1, faces + 1)   
+        # self.face_monitorada = np.random.randint(1, faces + 1) 
+        # para efeitos do experimento vou setar a face monitorada como a 6 
+        self.face_monitorada = 6  
         self.contador_face_monitorada = 0
         self.vetor_face_monitorada = []
 
@@ -32,14 +34,13 @@ class Dado_Ideal:
         #percorre os resultados e adiciona no historico e nos resultados dessa jogada e na quantiadade de jogadas ate sair x face
         for i in np.nditer(resultado):
             resultados_nessa_jogada[i]+= 1
-            #atualizamos o contador da nossa face monitorada
+            #atualizamos o contador da nossa face monitorada, estamos considerando X = numero de jogadas para sair face monitorada X ~ FirstSucess(5/6), FirstSucess(p) = 1 + Y ~  Geometry(p)
             self.contador_face_monitorada+= 1
             
             if i == self.face_monitorada:
                 self.vetor_face_monitorada+= [self.contador_face_monitorada]
                 self.contador_face_monitorada = 0
-            # else:
-            #     self.contador_face_monitorada+= 1
+
 
         self.historico_das_faces = np.append(self.historico_das_faces,[self.historico_das_faces[self.link_freq_jog] + resultados_nessa_jogada],axis=0)  
 
@@ -95,34 +96,26 @@ class Dado_Ideal:
 
 
     def grafico_face_monitorada(self):
-        #se a face nao tiver saido nao fazemos nada
-        if not self.vetor_face_monitorada: return
+        #se a face nao tiver saido nao fazemos nada ou ela tiver saído nas primeiras vezes que eu jogar
+        if not self.vetor_face_monitorada or (len(np.unique(self.vetor_face_monitorada))== 1 and (0 in np.unique(self.vetor_face_monitorada))): return
         data = self.vetor_face_monitorada
         media = np.mean(data)
         mediana = np.median(data)
         desvio_padrao = np.std(data)
+
+        valor_esperado = (((self.faces-1)/self.faces)/(1/self.faces)) + 1 
         plt.hist(data, bins = range(np.min(data)-1, np.max(data)+2), align= 'left', density = True, color = 'skyblue', edgecolor = 'black'  )
         plt.xticks(range(np.min(data)-1, np.max(data)+2))
         plt.xlabel("Quantidade de lançamentos")
         plt.ylabel("Porcentagem dos lançamentos")
-        plt.text(x = (np.max(data)/(2)), y = ((1/self.faces)/2), s = f"média = {media:.4f} \n mediana = {mediana} \n desvio padrão = {desvio_padrao:.4f}")
+        plt.text(x = (np.max(data)/(2)), y = ((1/self.faces)/2), s = f"média = {media:.4f} \n valor esperado = {valor_esperado:.4f} \n mediana = {mediana} \n desvio padrão = {desvio_padrao:.4f}")
         plt.title(f"Histograma que mostra quantas vezes foram jogadas o dado até que a face {self.face_monitorada} fosse obtida")
         plt.tight_layout()
         # plt.show()
 
 # d = Dado_Ideal(6)
-# d.jogar_dado(500000)
-# d.grafico_jogadas()
-# plt.show()
-# plt.clf()
-# d.grafico_erro()
-# plt.show()
-# dado1 = Dado_Ideal(6)
-# dado1.jogar_dado(2)
-# dado1.jogar_dado(5)
-# print(dado1.historico_das_faces,dado1.vezes_jogadas )
-# for i in range (8):
-#     dado1.jogar_dado(2**i)
-#     if i == 30:
-#         dado1.grafico_erro()
+# for i in range (20):
+#     d.jogar_dado(2**i)
+#     if i != 0 and 20%i == 0:
+#         d.grafico_face_monitorada()
 #         plt.show()

@@ -12,7 +12,9 @@ class Dado_Enviesado:
         self.link_freq_jog = 0 #esse link serve para relacionar historico[link][x] com jogadas[link]
 
         #sorteamos uma face para monitorar
-        self.face_monitorada = np.random.randint(1, faces + 1)  
+        # self.face_monitorada = np.random.randint(1, faces + 1) 
+        # para efeitos do experimento vou setar a face monitorada como a 6 
+        self.face_monitorada = 6
         self.contador_face_monitorada = 0
         self.vetor_face_monitorada = []
 
@@ -121,34 +123,30 @@ class Dado_Enviesado:
         plt.legend()
         # plt.show()
 
-    def media_face_monitorada(self):
-        # problema quando a face escolhida aparece na primeira vez
-        try:
-            media = (sum(self.vetor_face_monitorada))/len(self.vetor_face_monitorada)
-            return (f"Devemos fazer aproximadamente {media} lançamentos para que a face {self.face_monitorada} apareça ao menos uma vez")
-        except ZeroDivisionError:
-            return(f"A face {self.face_monitorada} ainda não apareceu para {sum(self.vezes_jogadas)} jogadas")
 
     def grafico_face_monitorada(self):
-        #se a face nao tiver saido nao fazemos nada
-        if not self.vetor_face_monitorada: return
+        #se a face nao tiver saido nao fazemos nada ou ela tiver saído nas primeiras vezes que eu jogar
+        if not self.vetor_face_monitorada or (len(np.unique(self.vetor_face_monitorada))== 1 and (0 in np.unique(self.vetor_face_monitorada))): return
         data = self.vetor_face_monitorada
         media = np.mean(data)
         mediana = np.median(data)
         desvio_padrao = np.std(data)
+        
+        valor_esperado = ((1-(self.p_face[self.face_monitorada][1]-self.p_face[self.face_monitorada][0]))/(self.p_face[self.face_monitorada][1]-self.p_face[self.face_monitorada][0]))+ 1
         plt.hist(data, bins = range(np.min(data)-1, np.max(data)+2), align= 'left', density = True, color = 'skyblue', edgecolor = 'black'  )
         plt.xticks(range(np.min(data)-1, np.max(data)+2))
         plt.xlabel("Quantidade de lançamentos")
         plt.ylabel("Porcentagem dos lançamentos")
-        plt.text(x = (np.max(data)/(2)), y = (self.p_face[self.face_monitorada][1]-self.p_face[self.face_monitorada][0])/2, s = f"média = {media:.4f} \n mediana = {mediana} \n desvio padrão = {desvio_padrao:.4f}")
+        plt.text(x = (np.max(data)/(2)), y = (self.p_face[self.face_monitorada][1]-self.p_face[self.face_monitorada][0])/2, s = f"média = {media:.4f} \n valor esperado = {valor_esperado:.4f} \n mediana = {mediana} \n desvio padrão = {desvio_padrao:.4f}")
         plt.title(f"Histograma que mostra quantas vezes foram jogadas o dado até que a face {self.face_monitorada} fosse obtida")
         plt.tight_layout()
         # plt.show()
+
 
 
 # d = Dado_Enviesado(6, [[1,0.8]])
 # for i in range (20):
 #     d.jogar_dado(2**i)
 #     if i != 0 and 20%i == 0:
-#         d.grafico_erro()
+#         d.grafico_face_monitorada()
 #         plt.show()

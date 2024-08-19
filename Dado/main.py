@@ -46,16 +46,16 @@ for i in range(vezez_jogads):
         plt.clf()
 
         dado_env.grafico_jogadas()
-        plt.savefig(f"{new_folder_name}/dado-env-jog-{(2**i)+1}vezes.png")
+        plt.savefig(f"{new_folder_name}/dado-env-jog-vies_{c}-{(2**i)+1}vezes.png")
         if e == True and (i+1)%m == 0: plt.show()
         plt.clf()
 
         dado_env.grafico_erro()
-        plt.savefig(f"{new_folder_name}/dado-env-erro-{(2**i)+1}vezes.png")
+        plt.savefig(f"{new_folder_name}/dado-env-erro-vies_{c}-{(2**i)+1}vezes.png")
         if e == True and (i+1)%m == 0: plt.show()
         plt.clf()
 
         dado_env.grafico_face_monitorada()
-        plt.savefig(f"{new_folder_name}/dado-env-monitor-{(2**i)+1}vezes.png")
+        plt.savefig(f"{new_folder_name}/dado-env-monitor-vies_{c}-{(2**i)+1}vezes.png")
         if e == True and (i+1)%m == 0: plt.show()
         plt.clf()
